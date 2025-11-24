@@ -1,0 +1,55 @@
+[project]
+name = "plapperi"
+version = "0.0.1"
+authors = [{ name = "Noxenum", email = "info@noxenum.io" }]
+description = "The official Python library for the Plapperi API"
+readme = "README.md"
+dependencies = ["httpx>=0.23.0, <1", "pydantic>=1.9.0, <3"]
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Typing :: Typed",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "License :: OSI Approved :: Apache Software License",
+]
+license = "Apache-2.0"
+license-files = ["LICEN[CS]E*"]
+
+[project.urls]
+Homepage = "https://github.com/Plapperi/plapperi-python"
+Issues = "https://github.com/Plapperi/plapperi-python/issues"
+
+[build-system]
+requires = ["hatchling>1.26", "hatch-fancy-pypi-readme"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+include = ["src/*"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/plapperi"]
+
+[tool.hatch.build.targets.sdist]
+# Basically everything except hidden files/directories (such as .github, .devcontainers, .python-version, etc)
+include = ["/*.toml", "/*.md", "src/*", "tests/*"]
+
+[tool.hatch.metadata.hooks.fancy-pypi-readme]
+content-type = "text/markdown"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+path = "README.md"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
+# replace relative links with absolute links
+pattern = '\[(.+?)\]\(((?!https?://)\S+?)\)'
+replacement = '[\1](https://github.com/Plapperi/plapperi-python/tree/main/\g<2>)'
+
+[project.optional-dependencies]
+test = ["pytest", "pytest-env"]
