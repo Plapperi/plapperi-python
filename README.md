@@ -62,7 +62,7 @@ result = client.translation.translate(
 )
 
 print(result)
-# Output: "D Bevolkerig het gnueg vo de vile Turischte."
+# Output: "D'Bevölkrig het gnüeg va de viele Touristu."
 ```
 
 ### Supported Dialects
@@ -104,7 +104,7 @@ Control the translation quality using beam search:
 result = client.translation.translate(
     text="Guten Morgen, wie geht es Ihnen?",
     dialect="be",
-    beam_size=8,  # Higher values = better quality but slower (1-8)
+    beam_size=8,  # Higher values = better quality but slower (default=4)
 )
 ```
 
