@@ -601,11 +601,9 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ### Upcoming Features
 
-- Async client support
 - Speech synthesis API
 - Streaming responses
 - WebSocket support for real-time translation
-- Additional dialects
 
 ## Acknowledgments
 
