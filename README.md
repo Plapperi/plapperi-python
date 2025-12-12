@@ -82,14 +82,14 @@ The following Swiss German dialects are currently supported:
 
 ### Basic Speech Synthetization
 
-Synthezize speech:
+Synthesize speech:
 
 ```python
 from plapperi import Plapperi
 
 client = Plapperi()
 
-# Synthezize with voice aragon
+# Synthesize with voice aragon
 result = client.synthetization.synth(
     text="D Bevölkerig het gnueg vode vellne Touriste.",
     voice="aragon",
