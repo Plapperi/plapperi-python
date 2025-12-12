@@ -5,6 +5,7 @@ import httpx
 from plapperi.errors.api_error import ApiError
 from plapperi.errors.timeout_error import PlapperiTimeoutError
 from plapperi.operations.base_client import BaseClient
+from plapperi.types.dialect import DialectLike, normalize_dialect
 from plapperi.types.job import Job
 from plapperi.types.translation import TranslationStatus
 
@@ -15,7 +16,7 @@ class TranslationClient(BaseClient):
     def __init__(self, base_url: str, api_key: str, client: httpx.Client):
         super().__init__(base_url=base_url, api_key=api_key, client=client)
 
-    def start(self, text: str, dialect: str, beam_size: int = 4) -> Job:
+    def start(self, text: str, dialect: DialectLike, beam_size: int = 4) -> Job:
         """
         Start a translation job
 
@@ -27,7 +28,11 @@ class TranslationClient(BaseClient):
         Returns:
             Job information including jobId and status
         """
-        payload = {"text": text, "dialect": dialect, "beam_size": beam_size}
+        payload = {
+            "text": text,
+            "dialect": normalize_dialect(dialect),
+            "beam_size": beam_size,
+        }
         response = self._make_request("POST", "translation/run", json=payload)
         return Job.model_validate(response)
 
@@ -47,7 +52,7 @@ class TranslationClient(BaseClient):
     def translate(
         self,
         text: str,
-        dialect: str,
+        dialect: DialectLike,
         beam_size: int = 4,
         poll_interval: float = 1.0,
         timeout: float = 60.0,
