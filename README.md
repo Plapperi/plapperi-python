@@ -401,6 +401,48 @@ Check the status of a translation job.
 - `error` (str | None): Error message if failed
 - Properties: `is_completed`, `is_failed`, `is_pending`, `is_processing`
 
+### Synthetization
+
+#### `client.synthetization.synth(text, voice, poll_interval=1.0, timeout=60.0)`
+
+ Synthesize text and wait for completion.
+
+**Parameters:**
+- `text` (str): Text to translate to Swiss German
+- `voice` (str): Voice identifier (e.g., 'aragon')
+- `poll_interval` (float): Seconds between status checks. Default: `1.0`
+- `timeout` (float): Maximum seconds to wait. Default: `60.0`
+
+**Returns:** `bytes` - The synthetized audio
+
+**Raises:**
+- `PlapperiTimeoutError`: If job doesn't complete within timeout
+- `ApiError`: If job fails or API error occurs
+
+#### `client.synthetization.start(text, voice, beam_size=4)`
+
+Start a translation job without waiting.
+
+**Parameters:**
+- `text` (str): Text to translate
+- `dialect` (str): Voice identifier
+
+**Returns:** `Job` - Job information with `job_id` and `status`
+
+#### `client.synthetization.status(job_id)`
+
+Check the status of a synthetization job.
+
+**Parameters:**
+- `job_id` (str): The job ID from `start()`
+
+**Returns:** `TranslationStatus` - Status object with:
+- `job_id` (str): The job identifier
+- `status` (JobStatus): Current status (PENDING, PROCESSING, COMPLETED, FAILED)
+- `result` (SynthetizationResult | None): Synthetization result if completed
+- `error` (str | None): Error message if failed
+- Properties: `is_completed`, `is_failed`, `is_pending`, `is_processing`
+
 ## Type Definitions
 
 ### Job Status Values

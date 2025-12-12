@@ -21,7 +21,7 @@ class SynthetizationClient(BaseClient):
 
         Args:
             text: Text to translate to Swiss German
-            voice: Voice code (e.g., 'aragon')
+            voice: Voice identifier (e.g., 'aragon')
 
         Returns:
             Job information including jobId and status
@@ -51,11 +51,11 @@ class SynthetizationClient(BaseClient):
         timeout: float = 60.0,
     ) -> bytes:
         """
-        Synthetize text and wait for completion
+        Synthesize text and wait for completion
 
         Args:
             text: Text to synthetize
-            voice: Voice code (e.g., 'aragon')
+            voice: Voice identifier (e.g., 'aragon')
             poll_interval: Seconds between status checks (default: 1.0)
             timeout: Maximum seconds to wait (default: 60.0)
 
