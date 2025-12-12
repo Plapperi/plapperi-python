@@ -90,10 +90,17 @@ from plapperi import Plapperi
 client = Plapperi()
 
 # Synthesize with voice aragon
-result = client.synthetization.synth(
+audio_bytes = client.synthetization.synth(
     text="D Bevölkerig het gnueg vode vellne Touriste.",
     voice="aragon",
 )
+```
+
+Save audio to file:
+
+```python
+with open("output.wav", "wb") as f:
+    f.write(audio_bytes)
 ```
 
 ## Advanced Usage

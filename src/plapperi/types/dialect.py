@@ -23,7 +23,7 @@ def normalize_dialect(dialect: DialectLike) -> str:
         return dialect.value
 
     try:
-        return Dialect(dialect).value
+        return Dialect(dialect.lower()).value
     except ValueError as e:
         raise ValueError(
             f"Invalid dialect {dialect!r}. Allowed: {[d.value for d in Dialect]}"
