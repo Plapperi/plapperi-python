@@ -80,6 +80,22 @@ The following Swiss German dialects are currently supported:
 | `gr` | Graubünden | `dialect="gr"` |
 | `sg` | St. Gallen | `dialect="sg"` |
 
+### Basic Speech Synthetization
+
+Synthezize speech:
+
+```python
+from plapperi import Plapperi
+
+client = Plapperi()
+
+# Synthezize with voice aragon
+result = client.synthetization.synth(
+    text="D Bevölkerig het gnueg vode vellne Touriste.",
+    voice="aragon",
+)
+```
+
 ## Advanced Usage
 
 ### Custom Configuration
@@ -108,7 +124,7 @@ result = client.translation.translate(
 )
 ```
 
-### Manual Job Control
+### Manual Job Control (Translation)
 
 For more control over the translation process, you can manage jobs manually:
 
@@ -552,32 +568,6 @@ for r in results:
         print(f"✗ {r['original']}: {r.get('error', 'Unknown error')}")
 ```
 
-### Project Structure
-
-```
-plapperi/
-├── src/plapperi/
-│   ├── __init__.py
-│   ├── client.py              # Main client class
-│   ├── version.py             # Version information
-│   ├── errors/                # Error definitions
-│   │   ├── api_error.py
-│   │   ├── timeout_error.py
-│   │   └── unauthorized_error.py
-│   ├── operations/            # API operations
-│   │   ├── base_client.py
-│   │   ├── translation/       # Translation operations
-│   │   └── synthetization/    # Speech synthesis (coming soon)
-│   └── types/                 # Type definitions
-│       ├── dialect.py
-│       ├── job.py
-│       └── translation.py
-├── tests/                     # Test suite
-├── README.md
-├── LICENSE
-└── pyproject.toml
-```
-
 ## Support
 
 - **Documentation**: [https://plapperi.ch/docs](https://plapperi.ch/docs)
@@ -590,6 +580,10 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ## Changelog
 
+### 0.0.2
+
+- Synthetization API support (TTS)
+
 ### 0.0.1 (Current)
 
 - Initial release
@@ -601,7 +595,6 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ### Upcoming Features
 
-- Speech synthesis API
 - Streaming responses
 - WebSocket support for real-time translation
 

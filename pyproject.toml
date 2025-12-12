@@ -1,6 +1,6 @@
 [project]
 name = "plapperi"
-version = "0.0.1"
+version = "0.0.2"
 authors = [{ name = "Noxenum", email = "info@noxenum.io" }]
 description = "The official Python library for the Plapperi API"
 readme = "README.md"
