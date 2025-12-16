@@ -80,6 +80,29 @@ The following Swiss German dialects are currently supported:
 | `gr` | Graubünden | `dialect="gr"` |
 | `sg` | St. Gallen | `dialect="sg"` |
 
+### Basic Speech Synthetization
+
+Synthesize speech:
+
+```python
+from plapperi import Plapperi
+
+client = Plapperi()
+
+# Synthesize with voice aragon
+audio_bytes = client.synthetization.synth(
+    text="D Bevölkerig het gnueg vode vellne Touriste.",
+    voice="aragon",
+)
+```
+
+Save audio to file:
+
+```python
+with open("output.wav", "wb") as f:
+    f.write(audio_bytes)
+```
+
 ## Advanced Usage
 
 ### Custom Configuration
@@ -108,7 +131,7 @@ result = client.translation.translate(
 )
 ```
 
-### Manual Job Control
+### Manual Job Control (Translation)
 
 For more control over the translation process, you can manage jobs manually:
 
@@ -378,6 +401,48 @@ Check the status of a translation job.
 - `error` (str | None): Error message if failed
 - Properties: `is_completed`, `is_failed`, `is_pending`, `is_processing`
 
+### Synthetization
+
+#### `client.synthetization.synth(text, voice, poll_interval=1.0, timeout=60.0)`
+
+ Synthesize text and wait for completion.
+
+**Parameters:**
+- `text` (str): Text to translate to Swiss German
+- `voice` (str): Voice identifier (e.g., 'aragon')
+- `poll_interval` (float): Seconds between status checks. Default: `1.0`
+- `timeout` (float): Maximum seconds to wait. Default: `60.0`
+
+**Returns:** `bytes` - The synthetized audio
+
+**Raises:**
+- `PlapperiTimeoutError`: If job doesn't complete within timeout
+- `ApiError`: If job fails or API error occurs
+
+#### `client.synthetization.start(text, voice, beam_size=4)`
+
+Start a translation job without waiting.
+
+**Parameters:**
+- `text` (str): Text to translate
+- `dialect` (str): Voice identifier
+
+**Returns:** `Job` - Job information with `job_id` and `status`
+
+#### `client.synthetization.status(job_id)`
+
+Check the status of a synthetization job.
+
+**Parameters:**
+- `job_id` (str): The job ID from `start()`
+
+**Returns:** `TranslationStatus` - Status object with:
+- `job_id` (str): The job identifier
+- `status` (JobStatus): Current status (PENDING, PROCESSING, COMPLETED, FAILED)
+- `result` (SynthetizationResult | None): Synthetization result if completed
+- `error` (str | None): Error message if failed
+- Properties: `is_completed`, `is_failed`, `is_pending`, `is_processing`
+
 ## Type Definitions
 
 ### Job Status Values
@@ -552,32 +617,6 @@ for r in results:
         print(f"✗ {r['original']}: {r.get('error', 'Unknown error')}")
 ```
 
-### Project Structure
-
-```
-plapperi/
-├── src/plapperi/
-│   ├── __init__.py
-│   ├── client.py              # Main client class
-│   ├── version.py             # Version information
-│   ├── errors/                # Error definitions
-│   │   ├── api_error.py
-│   │   ├── timeout_error.py
-│   │   └── unauthorized_error.py
-│   ├── operations/            # API operations
-│   │   ├── base_client.py
-│   │   ├── translation/       # Translation operations
-│   │   └── synthetization/    # Speech synthesis (coming soon)
-│   └── types/                 # Type definitions
-│       ├── dialect.py
-│       ├── job.py
-│       └── translation.py
-├── tests/                     # Test suite
-├── README.md
-├── LICENSE
-└── pyproject.toml
-```
-
 ## Support
 
 - **Documentation**: [https://plapperi.ch/docs](https://plapperi.ch/docs)
@@ -590,6 +629,10 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ## Changelog
 
+### 0.0.2
+
+- Synthetization API support (TTS)
+
 ### 0.0.1 (Current)
 
 - Initial release
@@ -601,7 +644,6 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ### Upcoming Features
 
-- Speech synthesis API
 - Streaming responses
 - WebSocket support for real-time translation
 
