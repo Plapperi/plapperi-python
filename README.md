@@ -10,6 +10,7 @@ The official Python library for the [Plapperi.ch](https://plapperi.ch/) API. Tra
 
 - **Dialect Translation**: Translate High German to various Swiss German dialects
 - **Speech Synthesis**: Generate natural-sounding audio from Swiss German text
+- **Multi-Speaker Dialogues**: Generate one native WAV with two stable voices and dialects
 - **Async Support**: Both synchronous and asynchronous operations
 - **Batch Processing**: Efficient handling of multiple translation jobs
 - **Type Safety**: Full type hints with Pydantic models
@@ -85,16 +86,20 @@ The following Swiss German dialects are currently supported:
 Synthesize speech:
 
 ```python
-from plapperi import Plapperi
+from plapperi import Dialect, Plapperi
 
 client = Plapperi()
 
-# Synthesize with voice aragon
+# Synthesize stable Züridütsch with voice wren
 audio_bytes = client.synthetization.synth(
     text="D Bevölkerig het gnueg vode vellne Touriste.",
-    voice="aragon",
+    voice="wren",
+    dialect=Dialect.ZURICH,
 )
 ```
+
+Speech synthesis supports `be`, `gr`, `lu`, and `zh`. If `dialect` is omitted,
+the SDK uses `zh` for backward compatibility.
 
 Save audio to file:
 
@@ -102,6 +107,36 @@ Save audio to file:
 with open("output.wav", "wb") as f:
     f.write(audio_bytes)
 ```
+
+### Native Multi-Speaker Dialogues
+
+Generate one WAV containing a complete two-speaker Swiss German conversation:
+
+```python
+from plapperi import DialogueTurn, Plapperi, Speaker
+
+client = Plapperi()
+audio = client.multi_speaker.synth(
+    speakers=[
+        Speaker(id="speaker-1", voice="tavin", dialect="zh"),
+        Speaker(id="speaker-2", voice="brisa", dialect="be"),
+    ],
+    turns=[
+        DialogueTurn(speaker_id="speaker-1", text="Hoi mitenand."),
+        DialogueTurn(speaker_id="speaker-2", text="Sali, wie geits?"),
+    ],
+    timeout=900,
+)
+
+with open("dialogue.wav", "wb") as output:
+    output.write(audio)
+```
+
+For manual job control, use `client.multi_speaker.start(...)` and poll
+`client.multi_speaker.status(job_id)`. Multi-speaker input requires exactly two
+distinct voices, at least one turn per speaker, no more than 100 turns, and no
+more than 5,000 spoken characters in total. Supported dialogue dialects are
+`be`, `gr`, `lu`, and `zh`.
 
 ## Advanced Usage
 
@@ -328,15 +363,17 @@ except Exception as e:
     print(f"Unexpected error: {e}")
 ```
 
-## Speech Synthesis (Coming Soon)
+## Speech Synthesis
 
-The synthetization API is currently under development:
+Select a supported dialect with either a string code or the `Dialect` enum:
 
 ```python
-# Future API (not yet implemented)
+from plapperi import Dialect
+
 audio = client.synthetization.synth(
     text="Grüezi mitenand!",
-    voice="swiss-german-female",
+    voice="wren",
+    dialect=Dialect.ZURICH,
 )
 ```
 
@@ -403,7 +440,7 @@ Check the status of a translation job.
 
 ### Synthetization
 
-#### `client.synthetization.synth(text, voice, poll_interval=1.0, timeout=60.0)`
+#### `client.synthetization.synth(text, voice, poll_interval=1.0, timeout=60.0, *, dialect=Dialect.ZURICH)`
 
  Synthesize text and wait for completion.
 
@@ -412,6 +449,7 @@ Check the status of a translation job.
 - `voice` (str): Voice identifier (e.g., 'aragon')
 - `poll_interval` (float): Seconds between status checks. Default: `1.0`
 - `timeout` (float): Maximum seconds to wait. Default: `60.0`
+- `dialect` (str | Dialect): Speech dialect (`be`, `gr`, `lu`, or `zh`). Default: `Dialect.ZURICH`
 
 **Returns:** `bytes` - The synthetized audio
 
@@ -419,13 +457,14 @@ Check the status of a translation job.
 - `PlapperiTimeoutError`: If job doesn't complete within timeout
 - `ApiError`: If job fails or API error occurs
 
-#### `client.synthetization.start(text, voice, beam_size=4)`
+#### `client.synthetization.start(text, voice, dialect=Dialect.ZURICH)`
 
-Start a translation job without waiting.
+Start a synthetization job without waiting.
 
 **Parameters:**
-- `text` (str): Text to translate
-- `dialect` (str): Voice identifier
+- `text` (str): Swiss German text to synthesize
+- `voice` (str): Voice identifier
+- `dialect` (str | Dialect): Speech dialect (`be`, `gr`, `lu`, or `zh`). Default: `Dialect.ZURICH`
 
 **Returns:** `Job` - Job information with `job_id` and `status`
 
@@ -436,7 +475,7 @@ Check the status of a synthetization job.
 **Parameters:**
 - `job_id` (str): The job ID from `start()`
 
-**Returns:** `TranslationStatus` - Status object with:
+**Returns:** `SynthetizationStatus` - Status object with:
 - `job_id` (str): The job identifier
 - `status` (JobStatus): Current status (PENDING, PROCESSING, COMPLETED, FAILED)
 - `result` (SynthetizationResult | None): Synthetization result if completed
@@ -628,6 +667,11 @@ for r in results:
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
 ## Changelog
+
+### 0.0.3
+
+- Native two-speaker dialogue synthesis with typed speaker and turn models
+- Dialect selection for single- and multi-speaker synthesis, including Graubünden (`gr`)
 
 ### 0.0.2
 

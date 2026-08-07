@@ -16,6 +16,12 @@ class Dialect(str, Enum):
 
 
 DialectLike = Union[str, Dialect]
+SYNTHETIZATION_DIALECTS = (
+    Dialect.BERN.value,
+    Dialect.GRAUBUNDEN.value,
+    Dialect.LUCERNE.value,
+    Dialect.ZURICH.value,
+)
 
 
 def normalize_dialect(dialect: DialectLike) -> str:
@@ -28,3 +34,18 @@ def normalize_dialect(dialect: DialectLike) -> str:
         raise ValueError(
             f"Invalid dialect {dialect!r}. Allowed: {[d.value for d in Dialect]}"
         ) from e
+
+
+def normalize_synthetization_dialect(dialect: DialectLike) -> str:
+    if not isinstance(dialect, (str, Dialect)):
+        raise ValueError(
+            f"Invalid synthetization dialect {dialect!r}. "
+            f"Allowed: {list(SYNTHETIZATION_DIALECTS)}"
+        )
+    normalized = normalize_dialect(dialect)
+    if normalized not in SYNTHETIZATION_DIALECTS:
+        raise ValueError(
+            f"Invalid synthetization dialect {dialect!r}. "
+            f"Allowed: {list(SYNTHETIZATION_DIALECTS)}"
+        )
+    return normalized

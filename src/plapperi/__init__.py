@@ -4,6 +4,12 @@ from plapperi.types.job import Job, JobStatus, JobType
 from plapperi.types.translation import TranslationStatus, TranslationResult
 from plapperi.errors.api_error import ApiError
 from plapperi.errors.timeout_error import PlapperiTimeoutError
+from plapperi.types.multi_speaker import (
+    DialogueTurn,
+    MultiSpeakerResult,
+    MultiSpeakerStatus,
+    Speaker,
+)
 
 __all__ = [
     "Plapperi",
@@ -15,4 +21,8 @@ __all__ = [
     "TranslationResult",
     "ApiError",
     "PlapperiTimeoutError",
+    "Speaker",
+    "DialogueTurn",
+    "MultiSpeakerResult",
+    "MultiSpeakerStatus",
 ]

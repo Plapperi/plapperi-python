@@ -5,6 +5,11 @@ import httpx
 from plapperi.errors.api_error import ApiError
 from plapperi.errors.timeout_error import PlapperiTimeoutError
 from plapperi.operations.base_client import BaseClient
+from plapperi.types.dialect import (
+    Dialect,
+    DialectLike,
+    normalize_synthetization_dialect,
+)
 from plapperi.types.job import Job
 from plapperi.types.synthetization import SynthetizationStatus
 
@@ -15,18 +20,28 @@ class SynthetizationClient(BaseClient):
     def __init__(self, base_url: str, api_key: str, client: httpx.Client):
         super().__init__(base_url=base_url, api_key=api_key, client=client)
 
-    def start(self, text: str, voice: str) -> Job:
+    def start(
+        self,
+        text: str,
+        voice: str,
+        dialect: DialectLike = Dialect.ZURICH,
+    ) -> Job:
         """
         Start a synthetization job
 
         Args:
             text: Text to translate to Swiss German
             voice: Voice identifier (e.g., 'aragon')
+            dialect: Speech dialect (be, gr, lu, or zh; default: zh)
 
         Returns:
             Job information including jobId and status
         """
-        payload = {"text": text, "voice": voice}
+        payload = {
+            "text": text,
+            "voice": voice,
+            "dialect": normalize_synthetization_dialect(dialect),
+        }
         response = self._make_request("POST", "synthetization/run", json=payload)
         return Job.model_validate(response)
 
@@ -49,6 +64,8 @@ class SynthetizationClient(BaseClient):
         voice: str,
         poll_interval: float = 1.0,
         timeout: float = 60.0,
+        *,
+        dialect: DialectLike = Dialect.ZURICH,
     ) -> bytes:
         """
         Synthesize text and wait for completion
@@ -58,6 +75,7 @@ class SynthetizationClient(BaseClient):
             voice: Voice identifier (e.g., 'aragon')
             poll_interval: Seconds between status checks (default: 1.0)
             timeout: Maximum seconds to wait (default: 60.0)
+            dialect: Speech dialect (be, gr, lu, or zh; default: zh)
 
         Returns:
             The synthetized audio
@@ -67,7 +85,7 @@ class SynthetizationClient(BaseClient):
             PlapperiAPIError: If job fails or API error occurs
         """
         # Start the job
-        job = self.start(text=text, voice=voice)
+        job = self.start(text=text, voice=voice, dialect=dialect)
 
         # Poll for completion
         elapsed = 0.0
