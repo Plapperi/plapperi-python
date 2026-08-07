@@ -2,6 +2,7 @@ import typing
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from plapperi.types.dialect import Dialect, normalize_synthetization_dialect
 from plapperi.types.job import JobStatus, JobType
 
 
@@ -10,6 +11,7 @@ class SynthetizationRequest(BaseModel):
 
     text: str = Field(..., min_length=1)
     voice: str
+    dialect: Dialect = Dialect.ZURICH
 
     @field_validator("text")
     @classmethod
@@ -17,6 +19,11 @@ class SynthetizationRequest(BaseModel):
         if not v.strip():
             raise ValueError("Text cannot be empty or whitespace only")
         return v
+
+    @field_validator("dialect", mode="before")
+    @classmethod
+    def validate_dialect(cls, value: typing.Any) -> str:
+        return normalize_synthetization_dialect(value)
 
 
 class SynthetizationResult(BaseModel):

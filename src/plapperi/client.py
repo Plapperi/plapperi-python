@@ -3,6 +3,7 @@ import os
 import httpx
 
 from plapperi.operations.synthetization.client import SynthetizationClient
+from plapperi.operations.multi_speaker.client import MultiSpeakerClient
 from plapperi.operations.translation.client import TranslationClient
 
 
@@ -49,6 +50,9 @@ class Plapperi:
 
         self.translation = TranslationClient(self.base_url, self.api_key, self._client)
         self.synthetization = SynthetizationClient(
+            self.base_url, self.api_key, self._client
+        )
+        self.multi_speaker = MultiSpeakerClient(
             self.base_url, self.api_key, self._client
         )
 

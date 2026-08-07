@@ -8,6 +8,7 @@ class JobType(str, Enum):
 
     TRANSLATION = "translation"
     SYNTHETIZATION = "synthetization"
+    MULTI_SPEAKER = "multi-speaker"
 
 
 class JobStatus(str, Enum):
