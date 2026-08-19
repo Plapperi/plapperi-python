@@ -3,11 +3,17 @@ from unittest.mock import patch
 import httpx
 import pytest
 
+from plapperi.errors.api_error import ApiError
 from plapperi.errors.timeout_error import PlapperiTimeoutError
 from plapperi.operations.multi_speaker.client import MultiSpeakerClient
 from plapperi.types.dialect import Dialect
 from plapperi.types.job import JobType
-from plapperi.types.multi_speaker import DialogueTurn, MultiSpeakerRequest, Speaker
+from plapperi.types.multi_speaker import (
+    DialogueTurn,
+    MultiSpeakerRequest,
+    MultiSpeakerStatus,
+    Speaker,
+)
 
 
 SPEAKERS = [
@@ -61,6 +67,15 @@ def test_start_uses_structured_public_endpoint() -> None:
     assert job.job_type == JobType.MULTI_SPEAKER
 
 
+def test_status_normalizes_empty_processing_result() -> None:
+    status = MultiSpeakerStatus.model_validate(
+        {"jobId": "job-1", "status": "processing", "result": {}}
+    )
+
+    assert status.is_processing
+    assert status.result is None
+
+
 def test_synth_polls_and_downloads_wav_bytes() -> None:
     status_calls = 0
 
@@ -76,7 +91,12 @@ def test_synth_polls_and_downloads_wav_bytes() -> None:
             if status_calls == 1:
                 return httpx.Response(
                     200,
-                    json={"jobId": "job-1", "jobType": "multi-speaker", "status": "processing"},
+                    json={
+                        "jobId": "job-1",
+                        "jobType": "multi-speaker",
+                        "status": "processing",
+                        "result": {},
+                    },
                 )
             return httpx.Response(
                 200,
@@ -105,6 +125,31 @@ def test_synth_polls_and_downloads_wav_bytes() -> None:
 
     assert audio == b"RIFF-test-wav"
     assert status_calls == 2
+
+
+def test_synth_rejects_completed_status_without_audio() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.path == "/multi-speaker/run":
+            return httpx.Response(
+                200,
+                json={"jobId": "job-1", "jobType": "multi-speaker", "status": "pending"},
+            )
+        if request.url.path == "/multi-speaker/status/job-1":
+            return httpx.Response(
+                200,
+                json={
+                    "jobId": "job-1",
+                    "jobType": "multi-speaker",
+                    "status": "completed",
+                    "result": {},
+                },
+            )
+        raise AssertionError(f"Unexpected request: {request.url}")
+
+    with httpx.Client(transport=httpx.MockTransport(handler)) as http_client:
+        client = MultiSpeakerClient("https://api.example", "secret", http_client)
+        with pytest.raises(ApiError, match="completed without an audio result"):
+            client.synth(SPEAKERS, TURNS, poll_interval=0, timeout=10)
 
 
 def test_synth_raises_clear_timeout() -> None:

@@ -110,6 +110,14 @@ class MultiSpeakerStatus(BaseModel):
 
     model_config = ConfigDict(populate_by_name=True, use_enum_values=False)
 
+    @field_validator("result", mode="before")
+    @classmethod
+    def normalize_empty_result(cls, value: typing.Any):
+        """Treat the backend's in-progress result placeholder as no result."""
+        if isinstance(value, dict) and not value:
+            return None
+        return value
+
     @property
     def is_completed(self) -> bool:
         return self.status == JobStatus.COMPLETED

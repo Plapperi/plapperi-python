@@ -668,6 +668,10 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ## Changelog
 
+### 0.0.4
+
+- Fixed multi-speaker polling for pending and processing jobs
+
 ### 0.0.3
 
 - Native two-speaker dialogue synthesis with typed speaker and turn models
