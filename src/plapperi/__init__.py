@@ -10,6 +10,7 @@ from plapperi.types.multi_speaker import (
     MultiSpeakerStatus,
     Speaker,
 )
+from plapperi.types.voice import Voice, VoiceGender
 
 __all__ = [
     "Plapperi",
@@ -25,4 +26,6 @@ __all__ = [
     "DialogueTurn",
     "MultiSpeakerResult",
     "MultiSpeakerStatus",
+    "Voice",
+    "VoiceGender",
 ]

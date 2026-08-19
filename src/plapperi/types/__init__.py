@@ -4,5 +4,13 @@ from plapperi.types.multi_speaker import (
     MultiSpeakerStatus,
     Speaker,
 )
+from plapperi.types.voice import Voice, VoiceGender
 
-__all__ = ["Speaker", "DialogueTurn", "MultiSpeakerResult", "MultiSpeakerStatus"]
+__all__ = [
+    "Speaker",
+    "DialogueTurn",
+    "MultiSpeakerResult",
+    "MultiSpeakerStatus",
+    "Voice",
+    "VoiceGender",
+]
