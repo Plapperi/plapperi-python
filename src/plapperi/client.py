@@ -5,6 +5,7 @@ import httpx
 from plapperi.operations.synthetization.client import SynthetizationClient
 from plapperi.operations.multi_speaker.client import MultiSpeakerClient
 from plapperi.operations.translation.client import TranslationClient
+from plapperi.operations.voices.client import VoicesClient
 
 
 class Plapperi:
@@ -55,6 +56,7 @@ class Plapperi:
         self.multi_speaker = MultiSpeakerClient(
             self.base_url, self.api_key, self._client
         )
+        self.voices = VoicesClient(self.base_url, self.api_key, self._client)
 
     def close(self):
         """Close the HTTP client"""

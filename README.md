@@ -11,6 +11,7 @@ The official Python library for the [Plapperi.ch](https://plapperi.ch/) API. Tra
 - **Dialect Translation**: Translate High German to various Swiss German dialects
 - **Speech Synthesis**: Generate natural-sounding audio from Swiss German text
 - **Multi-Speaker Dialogues**: Generate one native WAV with two stable voices and dialects
+- **Voice Catalogue**: Discover current voices, gender labels, and synthesis dialects
 - **Async Support**: Both synchronous and asynchronous operations
 - **Batch Processing**: Efficient handling of multiple translation jobs
 - **Type Safety**: Full type hints with Pydantic models
@@ -46,6 +47,24 @@ from plapperi import Plapperi
 
 client = Plapperi(api_key="your-api-key-here")
 ```
+
+### Available Voices
+
+Fetch the current Studio voice roster instead of maintaining a local list:
+
+```python
+from plapperi import Plapperi
+
+client = Plapperi()
+
+for voice in client.voices.list():
+    dialects = ", ".join(dialect.value for dialect in voice.supported_dialects)
+    print(f"{voice.name} ({voice.gender.value}): {dialects}")
+```
+
+All current Studio voices support the `be`, `gr`, `lu`, and `zh` synthesis
+dialects. Dialect is selected when synthesizing and is not permanently assigned
+to a voice.
 
 ### Basic Translation
 
@@ -446,7 +465,7 @@ Check the status of a translation job.
 
 **Parameters:**
 - `text` (str): Text to translate to Swiss German
-- `voice` (str): Voice identifier (e.g., 'aragon')
+- `voice` (str): Voice identifier (e.g., 'wren')
 - `poll_interval` (float): Seconds between status checks. Default: `1.0`
 - `timeout` (float): Maximum seconds to wait. Default: `60.0`
 - `dialect` (str | Dialect): Speech dialect (`be`, `gr`, `lu`, or `zh`). Default: `Dialect.ZURICH`
@@ -481,6 +500,19 @@ Check the status of a synthetization job.
 - `result` (SynthetizationResult | None): Synthetization result if completed
 - `error` (str | None): Error message if failed
 - Properties: `is_completed`, `is_failed`, `is_pending`, `is_processing`
+
+### Voices
+
+#### `client.voices.list()`
+
+Return the current Studio voice catalogue.
+
+**Returns:** `list[Voice]`, where each voice contains:
+
+- `id` (str): Stable lowercase voice identifier
+- `name` (str): Public display name
+- `gender` (VoiceGender): `VoiceGender.FEMALE` or `VoiceGender.MALE`
+- `supported_dialects` (list[Dialect]): Dialects supported by the voice
 
 ## Type Definitions
 
@@ -667,6 +699,12 @@ for r in results:
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
 ## Changelog
+
+### 0.0.4
+
+- Added the typed voice catalogue through `client.voices.list()`
+- Added `Voice` and `VoiceGender` public types
+- Fixed multi-speaker polling for pending and processing jobs
 
 ### 0.0.3
 

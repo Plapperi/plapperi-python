@@ -31,7 +31,7 @@ class SynthetizationClient(BaseClient):
 
         Args:
             text: Text to translate to Swiss German
-            voice: Voice identifier (e.g., 'aragon')
+            voice: Voice identifier (e.g., 'wren')
             dialect: Speech dialect (be, gr, lu, or zh; default: zh)
 
         Returns:
@@ -72,7 +72,7 @@ class SynthetizationClient(BaseClient):
 
         Args:
             text: Text to synthetize
-            voice: Voice identifier (e.g., 'aragon')
+            voice: Voice identifier (e.g., 'wren')
             poll_interval: Seconds between status checks (default: 1.0)
             timeout: Maximum seconds to wait (default: 60.0)
             dialect: Speech dialect (be, gr, lu, or zh; default: zh)
